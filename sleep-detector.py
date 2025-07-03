@@ -25,7 +25,7 @@ def calculate_EAR(eye):
 
 cap = cv2.VideoCapture(0)
 
-print("🔍 Monitoring for sleep... Press 'q' to exit.")
+print(" Monitoring for sleep... Press 'q' to exit.")
 
 while True:
     ret, frame = cap.read()
@@ -52,7 +52,7 @@ while True:
             if avg_ear < EAR_THRESHOLD:
                 closed_frames += 1
                 if closed_frames > CLOSED_FRAMES_THRESHOLD:
-                    cv2.putText(frame, "😴 SLEEPING DETECTED", (50, 50),
+                    cv2.putText(frame, "SLEEPING DETECTED", (50, 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
             else:
                 closed_frames = 0
