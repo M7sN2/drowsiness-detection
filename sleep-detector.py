@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
 import mediapipe as mp
+import time
 
 
 EAR_THRESHOLD = 0.2
-CLOSED_FRAMES_THRESHOLD = 20  
-closed_frames = 0
+SLEEP_TIME_THRESHOLD = 3.0  # 3 seconds
+eyes_closed_start_time = None
 
 
 mp_face_mesh = mp.solutions.face_mesh
@@ -25,7 +26,7 @@ def calculate_EAR(eye):
 
 cap = cv2.VideoCapture(0)
 
-print(" Monitoring for sleep... Press 'q' to exit.")
+print("🔍 Monitoring for sleep... Press 'q' to exit.")
 
 while True:
     ret, frame = cap.read()
@@ -50,12 +51,13 @@ while True:
             avg_ear = (left_ear + right_ear) / 2.0
 
             if avg_ear < EAR_THRESHOLD:
-                closed_frames += 1
-                if closed_frames > CLOSED_FRAMES_THRESHOLD:
-                    cv2.putText(frame, "SLEEPING DETECTED", (50, 50),
+                if eyes_closed_start_time is None:
+                    eyes_closed_start_time = time.time()  # Start timer
+                elif time.time() - eyes_closed_start_time >= SLEEP_TIME_THRESHOLD:
+                    cv2.putText(frame, "😴 SLEEPING DETECTED", (50, 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
             else:
-                closed_frames = 0
+                eyes_closed_start_time = None  # Reset timer when eyes open
 
     cv2.imshow("Sleep Detection", frame)
 
